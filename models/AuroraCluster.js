@@ -33,7 +33,7 @@ class AuroraCluster {
          */
         this.config = config;
 
-        this.poolWritter = createPool({
+        this.poolWritter = this.createPool({
             host: this.DB_HOST,
             port: this.DB_PORT,
             user: this.DB_USER,
@@ -41,7 +41,7 @@ class AuroraCluster {
             password: this.DB_PASS
         }, config);
 
-        this.poolReader = createPool({
+        this.poolReader = this.createPool({
             host: this.DB_HOST_READ,
             port: this.DB_PORT_READ,
             user: this.DB_USER_READ,
@@ -52,7 +52,7 @@ class AuroraCluster {
     }
 
     createPool(poolData, config = {}) {
-        return pool = mysql2.createPool({
+        let pool = mysql2.createPool({
             host: poolData.host,
             port: poolData.port,
             user: poolData.user,
@@ -62,6 +62,7 @@ class AuroraCluster {
             connectionLimit: config.connectionLimit || 10,
             queueLimit: config.queueLimit || 0
         });
+        return pool;
     }
 
 
