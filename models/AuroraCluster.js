@@ -65,7 +65,11 @@ class AuroraCluster {
     }
 
 
-    executeQueryRead(query) {
+    /**
+     * Query that will be executed on the Reader Pool
+     * @param {*} query 
+     */
+    read(query) {
         return new Promise((resolve, reject) => {
             this.poolReader.query(
                 query,
@@ -82,7 +86,11 @@ class AuroraCluster {
         });
     }
 
-    executeQueryWrite(query) {
+    /**
+     * Query that will be executed on the Writer Pool
+     * @param {*} query 
+     */
+    write(query) {
         return new Promise((resolve, reject) => {
             this.poolWritter.query(
                 query,

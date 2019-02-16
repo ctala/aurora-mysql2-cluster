@@ -1,16 +1,23 @@
 {
   "name": "aurora-mysql2-cluster",
-  "version": "0.0.1",
+  "version": "1.0.1",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Cristian Tala Sánchez <yomismo@cristiantala.cl> (http://www.cristiantala.cl)",
   "license": "MIT",
-  "devDependencies": {
-  },
+  "devDependencies": {},
   "dependencies": {
     "mysql2": "^1.6.5"
   },
-  "description": ""
+  "description": "Managed Pool Connections for Aurora DB",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctala/aurora-mysql2-cluster.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ctala/aurora-mysql2-cluster/issues"
+  },
+  "homepage": "https://github.com/ctala/aurora-mysql2-cluster#readme"
 }
