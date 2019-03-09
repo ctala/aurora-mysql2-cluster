@@ -94,7 +94,7 @@ class AuroraCluster {
         }
     }
 
-    getParameter = (param) => {
+    getParameter(param) {
         return new Promise((success, reject) => {
             ssm.getParameter(param, (err, data) => {
                 if (err) {
