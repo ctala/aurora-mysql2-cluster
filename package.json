@@ -9,6 +9,7 @@
   "license": "MIT",
   "devDependencies": {},
   "dependencies": {
+    "aws-sdk": "^2.418.0",
     "mysql2": "^1.6.5"
   },
   "description": "Managed Pool Connections for Aurora DB",

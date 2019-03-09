@@ -23,11 +23,12 @@ This module will read the enviromental variables in order to find the informatio
 
 While we can use an Aurora writter endpoint to read is not recommended. All the information not found in the enviroment will use the writter variables by default.
 
-* DB_HOST (RECOMMENDED)
-* DB_USER (OPTIONAL)
-* DB_DATABASE (OPTIONAL)
-* DB_PORT (OPTIONAL)
-* DB_PASS (OPTIONAL)
+* DB_HOST_DEV (RECOMMENDED)
+* DB_USER_DEV (OPTIONAL)
+* DB_DATABASE_DEV (OPTIONAL)
+* DB_PORT_DEV (OPTIONAL)
+* DB_PASS_DEV (OPTIONAL)
+
 
 
 ## Creating the object
@@ -40,7 +41,7 @@ const AuroraPool = require("aurora-mysql2-cluster");
 let auroraPool = new AuroraPool();
 ```
 
-Using params 
+### Using params 
 
 ```
 const AuroraPool = require("aurora-mysql2-cluster");
@@ -63,6 +64,21 @@ let readerInfo = {
 
 let auroraPool = new AuroraPool(writterInfo,readerInfo);
 ```
+
+### Amazon Systems Manager Agent (SSM)
+
+A good practice is to keep passwords encrypted and database information safe. That is why by default we can use SSM variables directly from our account. Any variable that we want to be loaded from AWS SSM just need to start with the pattern "ssm//".
+
+For example :
+
+```
+let writterInfo = {
+    host : "ssm//RDS_GW_HOST_WRITE",
+    password : "ssm//RDS_GW_HOST_PASSWORD"
+}
+```
+
+In this case we will load the host and the password from SSM ( Assuming you have permissions ). All passwords MUST be encrypted in SSM.
 
 ### Read Query
 
