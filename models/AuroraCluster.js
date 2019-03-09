@@ -54,6 +54,8 @@ class AuroraCluster {
          */
         this.config = config;
 
+
+
         this.poolWritter = this.createPool({
             host: this.DB_HOST,
             port: this.DB_PORT,
@@ -77,18 +79,20 @@ class AuroraCluster {
      * @param {*} value 
      * @param {*} encrypted 
      */
-    async parseSSM(value, encrypted = false) {
+    parseSSM(value, encrypted = false) {
         if (value.startsWith("ssm//")) {
-            try {
-                let ssm_variable = {
-                    Name: value.split("ssm//")[1], //GET SECOND VALUE AFTER SPLIT
-                    WithDecryption: encrypted
-                };
-                let data = await this.getParameter(ssm_variable);
+
+            let ssm_variable = {
+                Name: value.split("ssm//")[1], //GET SECOND VALUE AFTER SPLIT
+                WithDecryption: encrypted
+            };
+            this.getParameter(ssm_variable).then((data) => {
                 return data.Parameter.Value;
-            } catch (error) {
+            }).catch(errorGetParameter => {
+
                 return null;
-            }
+            });
+
         } else {
             return value;
         }
@@ -107,6 +111,7 @@ class AuroraCluster {
     };
 
     createPool(poolData, config = {}) {
+        console.log(poolData, config);
         let pool = mysql2.createPool({
             host: poolData.host,
             port: poolData.port,
@@ -162,11 +167,6 @@ class AuroraCluster {
             );
         });
     }
-
-
-
-
-
 }
 
 
