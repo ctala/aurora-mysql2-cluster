@@ -77,7 +77,7 @@ class AuroraCluster {
      * @param {*} value 
      * @param {*} encrypted 
      */
-    parseSSM = async (value, encrypted = false) => {
+    async parseSSM(value, encrypted = false) {
         if (value.startsWith("ssm//")) {
             try {
                 let ssm_variable = {
