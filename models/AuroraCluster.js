@@ -33,45 +33,59 @@ class AuroraCluster {
         this.DB_PORT_READ = reader.port || process.env.DB_PORT_READ || process.env.DB_PORT || 3306;
         this.DB_PASS_READ = reader.password || process.env.DB_PASS_READ || process.env.DB_PASS;
 
-        /**
-         * TRANSFORM ssm// variables 
-         */
-        this.DB_HOST = this.parseSSM(this.DB_HOST, false);
-        this.DB_USER = this.parseSSM(this.DB_USER, false);
-        this.DB_DATABASE = this.parseSSM(this.DB_DATABASE, false);
-        this.DB_PORT = this.parseSSM(this.DB_PORT, false);
-        this.DB_PASS = this.parseSSM(this.DB_PASS, true); //PASSWORD SHOULD BE ENCRYPTED
+        this.transformSSMs().then(() => {
+            /**
+             * Config for pool extra data
+             */
+            this.config = config;
 
-        this.DB_HOST_READ = this.parseSSM(this.DB_HOST_READ, false);
-        this.DB_USER_READ = this.parseSSM(this.DB_USER_READ, false);
-        this.DB_DATABASE_READ = this.parseSSM(this.DB_DATABASE_READ, false);
-        this.DB_PORT_READ = this.parseSSM(this.DB_PORT_READ, false);
-        this.DB_PASS_READ = this.parseSSM(this.DB_PASS_READ, true); //PASSWORD SHOULD BE ENCRYPTED
+            this.poolWritter = this.createPool({
+                host: this.DB_HOST,
+                port: this.DB_PORT,
+                user: this.DB_USER,
+                database: this.DB_DATABASE,
+                password: this.DB_PASS
+            }, config);
+
+            this.poolReader = this.createPool({
+                host: this.DB_HOST_READ,
+                port: this.DB_PORT_READ,
+                user: this.DB_USER_READ,
+                database: this.DB_DATABASE_READ,
+                password: this.DB_PASS_READ
+            }, config);
+        }).catch((errorTransform) => {
+            console.error(errorTransform);
+        });
+
+    }
 
 
-        /**
-         * Config for pool extra data
-         */
-        this.config = config;
+    transformSSMs() {
+        return new Promise(async (resolve, reject) => {
+            /**
+             * TRANSFORM ssm// variables 
+             */
+            try {
+                this.DB_HOST = await this.parseSSM(this.DB_HOST, false);
+                this.DB_USER = await this.parseSSM(this.DB_USER, false);
+                this.DB_DATABASE = await this.parseSSM(this.DB_DATABASE, false);
+                this.DB_PORT = await this.parseSSM(this.DB_PORT, false);
+                this.DB_PASS = await this.parseSSM(this.DB_PASS, true); //PASSWORD SHOULD BE ENCRYPTED
+
+                this.DB_HOST_READ = await this.parseSSM(this.DB_HOST_READ, false);
+                this.DB_USER_READ = await this.parseSSM(this.DB_USER_READ, false);
+                this.DB_DATABASE_READ = await this.parseSSM(this.DB_DATABASE_READ, false);
+                this.DB_PORT_READ = await this.parseSSM(this.DB_PORT_READ, false);
+                this.DB_PASS_READ = await this.parseSSM(this.DB_PASS_READ, true); //PASSWORD SHOULD BE ENCRYPTED
+                resolve(true);
+            } catch (error) {
+                console.error(error);
+                reject(error);
+            }
 
 
-
-        this.poolWritter = this.createPool({
-            host: this.DB_HOST,
-            port: this.DB_PORT,
-            user: this.DB_USER,
-            database: this.DB_DATABASE,
-            password: this.DB_PASS
-        }, config);
-
-        this.poolReader = this.createPool({
-            host: this.DB_HOST_READ,
-            port: this.DB_PORT_READ,
-            user: this.DB_USER_READ,
-            database: this.DB_DATABASE_READ,
-            password: this.DB_PASS_READ
-        }, config);
-
+        })
     }
 
     /**
@@ -80,31 +94,34 @@ class AuroraCluster {
      * @param {*} encrypted 
      */
     parseSSM(value, encrypted = false) {
-        if (value.startsWith("ssm//")) {
+        return new Promise((resolve, reject) => {
+            if (value.startsWith("ssm//")) {
+                let ssm_variable = {
+                    Name: value.split("ssm//")[1], //GET SECOND VALUE AFTER SPLIT
+                    WithDecryption: encrypted
+                };
+                this.getParameter(ssm_variable).then((data) => {
+                    // console.log(data);
+                    resolve(data.Parameter.Value);
+                }).catch(errorGetParameter => {
+                    console.error(errorGetParameter)
+                    resolve(null);
+                });
 
-            let ssm_variable = {
-                Name: value.split("ssm//")[1], //GET SECOND VALUE AFTER SPLIT
-                WithDecryption: encrypted
-            };
-            this.getParameter(ssm_variable).then((data) => {
-                return data.Parameter.Value;
-            }).catch(errorGetParameter => {
+            } else {
+                resolve(value);
+            }
+        })
 
-                return null;
-            });
-
-        } else {
-            return value;
-        }
     }
 
     getParameter(param) {
-        return new Promise((success, reject) => {
+        return new Promise((resolve, reject) => {
             ssm.getParameter(param, (err, data) => {
                 if (err) {
                     reject(err);
                 } else {
-                    success(data);
+                    resolve(data);
                 }
             });
         });
