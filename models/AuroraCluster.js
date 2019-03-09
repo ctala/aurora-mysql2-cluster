@@ -36,17 +36,17 @@ class AuroraCluster {
         /**
          * TRANSFORM ssm// variables 
          */
-        this.DB_HOST = parseSSM(this.DB_HOST, false);
-        this.DB_USER = parseSSM(this.DB_USER, false);
-        this.DB_DATABASE = parseSSM(this.DB_DATABASE, false);
-        this.DB_PORT = parseSSM(this.DB_PORT, false);
-        this.DB_PASS = parseSSM(this.DB_PASS, true); //PASSWORD SHOULD BE ENCRYPTED
+        this.DB_HOST = this.parseSSM(this.DB_HOST, false);
+        this.DB_USER = this.parseSSM(this.DB_USER, false);
+        this.DB_DATABASE = this.parseSSM(this.DB_DATABASE, false);
+        this.DB_PORT = this.parseSSM(this.DB_PORT, false);
+        this.DB_PASS = this.parseSSM(this.DB_PASS, true); //PASSWORD SHOULD BE ENCRYPTED
 
-        this.DB_HOST_READ = parseSSM(this.DB_HOST_READ, false);
-        this.DB_USER_READ = parseSSM(this.DB_USER_READ, false);
-        this.DB_DATABASE_READ = parseSSM(this.DB_DATABASE_READ, false);
-        this.DB_PORT_READ = parseSSM(this.DB_PORT_READ, false);
-        this.DB_PASS_READ = parseSSM(this.DB_PASS_READ, true); //PASSWORD SHOULD BE ENCRYPTED
+        this.DB_HOST_READ = this.parseSSM(this.DB_HOST_READ, false);
+        this.DB_USER_READ = this.parseSSM(this.DB_USER_READ, false);
+        this.DB_DATABASE_READ = this.parseSSM(this.DB_DATABASE_READ, false);
+        this.DB_PORT_READ = this.parseSSM(this.DB_PORT_READ, false);
+        this.DB_PASS_READ = this.parseSSM(this.DB_PASS_READ, true); //PASSWORD SHOULD BE ENCRYPTED
 
 
         /**
@@ -84,7 +84,7 @@ class AuroraCluster {
                     Name: value.split("ssm//")[1], //GET SECOND VALUE AFTER SPLIT
                     WithDecryption: encrypted
                 };
-                let data = await getParameter(ssm_variable);
+                let data = await this.getParameter(ssm_variable);
                 return data.Parameter.Value;
             } catch (error) {
                 return null;
